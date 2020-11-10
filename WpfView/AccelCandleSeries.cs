@@ -377,7 +377,7 @@ namespace LiveCharts.Wpf
                                     FlowDirection.LeftToRight,
                                     typeFace,
                                     FontSize,
-                                    brushFg);
+                                    brushFg, 99d);
 
                             var xl = CorrectXLabel(current.ChartLocation.X - formattedText.Width * .5, Model.Chart, formattedText.Width);
                             var yl = CorrectYLabel(current.ChartLocation.Y - formattedText.Height * .5, Model.Chart, formattedText.Height);
