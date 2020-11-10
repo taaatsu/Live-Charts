@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <Copyright>Copyright © 2016 Alberto Rodríguez Orozco, 2020 Tatsuro Shidawara</Copyright>
     <AssemblyVersion>0.9.7.0</AssemblyVersion>

@@ -44,11 +44,14 @@ namespace LiveCharts
         #region Constructors
 
         static bool isClass;
-        static bool isObservable;
+        //static bool isObservable;
         static bool notifies;
 
         static ChartValues()
         {
+            isClass = typeof(T).IsClass;
+            notifies = isClass && typeof(INotifyPropertyChanged).IsAssignableFrom(typeof(T));
+/*
 #if NET40
             isClass = typeof(T).IsClass;
             isObservable = isClass && typeof(IObservableChartPoint).IsAssignableFrom(typeof(T));
@@ -62,6 +65,7 @@ namespace LiveCharts
             notifies = isClass && typeof(INotifyPropertyChanged).GetTypeInfo()
                                .IsAssignableFrom(typeof(T).GetTypeInfo());
 #endif
+*/
         }
 
         /// <summary>
@@ -378,10 +382,10 @@ namespace LiveCharts
                     {
                         if (item != null)
                         {
-                            if (isObservable)
-                            {
-                                (item as IObservableChartPoint).PointChanged -= ObservableOnPointChanged;
-                            }
+                            //if (isObservable)
+                            //{
+                            //    (item as IObservableChartPoint).PointChanged -= ObservableOnPointChanged;
+                            //}
 
                             if (notifies)
                             {
@@ -399,10 +403,10 @@ namespace LiveCharts
                     {
                         if (item != null)
                         {
-                            if (isObservable)
-                            {
-                                (item as IObservableChartPoint).PointChanged += ObservableOnPointChanged;
-                            }
+                            //if (isObservable)
+                            //{
+                            //    (item as IObservableChartPoint).PointChanged += ObservableOnPointChanged;
+                            //}
 
                             if (notifies)
                             {
