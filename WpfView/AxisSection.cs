@@ -460,7 +460,7 @@ namespace LiveCharts.Wpf
                 CultureInfo.CurrentUICulture,
                 FlowDirection.LeftToRight,
                 new Typeface(_label.FontFamily, _label.FontStyle, _label.FontWeight, _label.FontStretch),
-                _label.FontSize, Brushes.Black);
+                _label.FontSize, Brushes.Black, 99d);
 
             var transform = new LabelEvaluation(axis.View.LabelsRotation,
                 formattedText.Width + 10, formattedText.Height, axis, source);

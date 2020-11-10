@@ -623,7 +623,7 @@ namespace LiveCharts.Wpf
                  CultureInfo.CurrentUICulture,
                  FlowDirection.LeftToRight,
                  new Typeface(TitleBlock.FontFamily, TitleBlock.FontStyle, TitleBlock.FontWeight, TitleBlock.FontStretch),
-                 TitleBlock.FontSize, Brushes.Black);
+                 TitleBlock.FontSize, Brushes.Black, 99d);
 
             return string.IsNullOrWhiteSpace(Title)
                 ? new CoreSize()
