@@ -214,9 +214,12 @@ namespace LiveCharts
         public static double GetUnitWidth(AxisOrientation source, ChartCore chart, AxisCore axis)
         {
             double min;
-            double u = !double.IsNaN(axis.View.BarUnit)
-                    ? axis.View.BarUnit
-                    : (!double.IsNaN(axis.View.Unit)
+            //double u = !double.IsNaN(axis.View.BarUnit)
+            //        ? axis.View.BarUnit
+            //        : (!double.IsNaN(axis.View.Unit)
+            //            ? axis.View.Unit
+            //            : 1);
+            double u = (!double.IsNaN(axis.View.Unit)
                         ? axis.View.Unit
                         : 1);
 

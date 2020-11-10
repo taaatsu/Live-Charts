@@ -289,15 +289,21 @@ namespace LiveCharts
 
             InitializeGarbageCollector();
 
-            var m = !double.IsNaN(View.BarUnit)
-                ? View.BarUnit
-                : (!double.IsNaN(View.Unit)
+            //var m = !double.IsNaN(View.BarUnit)
+            //    ? View.BarUnit
+            //    : (!double.IsNaN(View.Unit)
+            //        ? View.Unit
+            //        : Magnitude);
+            var m = (!double.IsNaN(View.Unit)
                     ? View.Unit
                     : Magnitude);
 
-            var u = !double.IsNaN(View.BarUnit)
-                ? View.BarUnit
-                : (!double.IsNaN(View.Unit)
+            //var u = !double.IsNaN(View.BarUnit)
+            //    ? View.BarUnit
+            //    : (!double.IsNaN(View.Unit)
+            //        ? View.Unit
+            //        : 1);
+            var u = (!double.IsNaN(View.Unit)
                     ? View.Unit
                     : 1);
 
