@@ -408,7 +408,8 @@ namespace LiveCharts.Charts
         /// Zooms the in.
         /// </summary>
         /// <param name="pivot">The pivot.</param>
-        public void ZoomIn(CorePoint pivot)
+        /// <param name="requiredZoom">usually this value will be set View.Zoom</param>
+        public void ZoomIn(CorePoint pivot, ZoomingOptions requiredZoom)
         {
             if (AxisX == null || AxisY == null) return;
 
@@ -416,7 +417,7 @@ namespace LiveCharts.Charts
 
             var speed = View.ZoomingSpeed < 0.1 ? 0.1 : (View.ZoomingSpeed > 0.95 ? 0.95 : View.ZoomingSpeed);
 
-            if (View.Zoom == ZoomingOptions.X || View.Zoom == ZoomingOptions.Xy)
+            if (requiredZoom == ZoomingOptions.X || requiredZoom == ZoomingOptions.Xy)
             {
                 for (var index = 0; index < AxisX.Count; index++)
                 {
@@ -439,7 +440,7 @@ namespace LiveCharts.Charts
                 }
             }
 
-            if (View.Zoom == ZoomingOptions.Y || View.Zoom == ZoomingOptions.Xy)
+            if (requiredZoom == ZoomingOptions.Y || requiredZoom == ZoomingOptions.Xy)
             {
                 for (var index = 0; index < AxisY.Count; index++)
                 {
@@ -466,13 +467,14 @@ namespace LiveCharts.Charts
         /// Zooms the out.
         /// </summary>
         /// <param name="pivot">The pivot.</param>
-        public void ZoomOut(CorePoint pivot)
+        /// <param name="requiredZoom">usually this value will be set View.Zoom</param>
+        public void ZoomOut(CorePoint pivot, ZoomingOptions requiredZoom)
         {
             View.HideTooltip();
 
             var speed = View.ZoomingSpeed < 0.1 ? 0.1 : (View.ZoomingSpeed > 0.95 ? 0.95 : View.ZoomingSpeed);
 
-            if (View.Zoom == ZoomingOptions.X || View.Zoom == ZoomingOptions.Xy)
+            if (requiredZoom == ZoomingOptions.X || requiredZoom == ZoomingOptions.Xy)
             {
                 for (var index = 0; index < AxisX.Count; index++)
                 {
@@ -494,7 +496,7 @@ namespace LiveCharts.Charts
                 }
             }
 
-            if (View.Zoom == ZoomingOptions.Y || View.Zoom == ZoomingOptions.Xy)
+            if (requiredZoom == ZoomingOptions.Y || requiredZoom == ZoomingOptions.Xy)
             {
                 for (var index = 0; index < AxisY.Count; index++)
                 {
@@ -530,14 +532,14 @@ namespace LiveCharts.Charts
         /// Drags the specified delta.
         /// </summary>
         /// <param name="delta">The delta.</param>
-        public void Drag(CorePoint delta)
+        public void Drag(CorePoint delta, PanningOptions requiredPan)
         {
-            if (View.Pan == PanningOptions.Unset && View.Zoom == ZoomingOptions.None ||
-                View.Pan == PanningOptions.None) return;
+            if (requiredPan == PanningOptions.Unset && View.Zoom == ZoomingOptions.None ||
+                requiredPan == PanningOptions.None) return;
 
-            var px = View.Pan == PanningOptions.Unset &&
+            var px = requiredPan == PanningOptions.Unset &&
                      (View.Zoom == ZoomingOptions.X || View.Zoom == ZoomingOptions.Xy);
-            px = px || View.Pan == PanningOptions.X || View.Pan == PanningOptions.Xy;
+            px = px || requiredPan == PanningOptions.X || requiredPan == PanningOptions.Xy;
 
             if (px)
             {
@@ -552,9 +554,9 @@ namespace LiveCharts.Charts
                 }
             }
 
-            var py = View.Pan == PanningOptions.Unset &&
+            var py = requiredPan == PanningOptions.Unset &&
                      (View.Zoom == ZoomingOptions.Y || View.Zoom == ZoomingOptions.Xy);
-            py = py || View.Pan == PanningOptions.Y || View.Pan == PanningOptions.Xy;
+            py = py || requiredPan == PanningOptions.Y || requiredPan == PanningOptions.Xy;
             if (py)
             {
                 for (var index = 0; index < AxisY.Count; index++)

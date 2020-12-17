@@ -104,11 +104,22 @@ namespace LiveCharts.Wpf.Charts.Base
             TooltipTimeoutTimer.Tick += TooltipTimeoutTimerOnTick;
 
             DrawMargin.Background = Brushes.Transparent; // if this line is not set, then it does not detect mouse down event...
-            DrawMargin.MouseDown += OnDraggingStart;
-            DrawMargin.MouseUp += OnDraggingEnd;
+
+            //DrawMargin.MouseDown += OnDraggingStart;
+            MouseDown += OnDraggingStart;
+
+            //DrawMargin.MouseUp += OnDraggingEnd;
+            MouseUp += OnDraggingEnd;
+
             DrawMargin.MouseMove += DragSection;
-            DrawMargin.MouseMove += PanOnMouseMove;
+
+            //DrawMargin.MouseMove += PanOnMouseMove;
+            MouseMove += PanOnMouseMove;
+
             MouseUp += DisableSectionDragMouseUp;
+
+            MouseDoubleClick += MouseDoubleClick_OnAxis;
+
 
             Unloaded += (sender, args) =>
             {
@@ -120,6 +131,7 @@ namespace LiveCharts.Wpf.Charts.Base
                 updater.Timer = null;
             };
         }
+
 
         static Chart()
         {
@@ -356,6 +368,23 @@ namespace LiveCharts.Wpf.Charts.Base
         }
 
         /// <summary>
+        /// The axis zoom property
+        /// 軸上でのマウスホイール操作による拡大縮小を設定
+        /// </summary>
+        public static readonly DependencyProperty AxisZoomProperty = DependencyProperty.Register(
+            nameof(AxisZoom), typeof(ZoomingOptions), typeof(Chart),
+            new PropertyMetadata(default(ZoomingOptions)));
+        /// <summary>
+        /// Gets or sets chart axis zoom behavior
+        /// </summary>
+        public ZoomingOptions AxisZoom
+        {
+            get { return (ZoomingOptions)GetValue(AxisZoomProperty); }
+            set { SetValue(AxisZoomProperty, value); }
+        }
+
+
+        /// <summary>
         /// The pan property
         /// </summary>
         public static readonly DependencyProperty PanProperty = DependencyProperty.Register(
@@ -371,6 +400,24 @@ namespace LiveCharts.Wpf.Charts.Base
             get { return (PanningOptions) GetValue(PanProperty); }
             set { SetValue(PanProperty, value); }
         }
+
+
+        /// <summary>
+        /// The pan property
+        /// 軸上でのマウスドラッグによるパン動作を設定する
+        /// </summary>
+        public static readonly DependencyProperty AxisPanProperty = DependencyProperty.Register(
+            nameof(AxisPan), typeof(PanningOptions), typeof(Chart), new PropertyMetadata(PanningOptions.Unset));
+        /// <value>
+        /// The axis pan.
+        /// </value>
+        public PanningOptions AxisPan
+        {
+            get { return (PanningOptions)GetValue(AxisPanProperty); }
+            set { SetValue(AxisPanProperty, value); }
+        }
+
+
 
         /// <summary>
         /// The legend location property
@@ -1290,9 +1337,99 @@ namespace LiveCharts.Wpf.Charts.Base
         private Point DragOrigin { get; set; }
         private bool IsPanning { get; set; }
 
+        private PanningOptions RequiredPan { get; set; }
+
+
+        /// <summary>
+        /// 指定された軸方向の値が、軸にヒットしているかどうかを調べる
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="axisOrientation"></param>
+        /// <returns></returns>
+        private Axis _HitTestAxis(double d, AxisOrientation axisOrientation)
+        {
+            var _axisList = axisOrientation == AxisOrientation.X ? AxisX : AxisY;
+
+            if (_axisList != null)
+            {
+                foreach (var _axis in _axisList)
+                {
+                    var tab = _axis.Model.Tab;
+
+                    //X軸を探す場合
+                    if (axisOrientation == AxisOrientation.X)
+                    {
+                        if (_axis.Position == AxisPosition.LeftBottom)
+                        {
+                            //チャートにマージされている場合、幅が確保されてないので、チャートサイズの10%を軸の幅として割り当てる
+                            if (_axis.IsMerged)
+                            {
+                                tab -= (Model.DrawMargin.Height * 0.1d);
+                            }
+
+                            if (tab < d)
+                            {
+                                return _axis;
+                            }
+                        }
+                        else
+                        {
+                            //チャートにマージされている場合、幅が確保されてないので、チャートサイズの10%を軸の幅として割り当てる
+                            if (_axis.IsMerged)
+                            {
+                                tab += (Model.DrawMargin.Height * 0.1d);
+                            }
+
+                            if (d < tab)
+                            {
+                                return _axis;
+                            }
+                        }
+
+                    }
+                    //Y軸を探す場合
+                    else
+                    {
+                        if (_axis.Position == AxisPosition.LeftBottom)
+                        {
+                            //チャートにマージされている場合、幅が確保されてないので、チャートサイズの10%を軸の幅として割り当てる
+                            if (_axis.IsMerged)
+                            {
+                                tab += (Model.DrawMargin.Width * 0.1d);
+                            }
+
+                            if (d < tab)
+                            {
+                                return _axis;
+                            }
+                        }
+                        else
+                        {
+                            //チャートにマージされている場合、幅が確保されてないので、チャートサイズの10%を軸の幅として割り当てる
+                            if (_axis.IsMerged)
+                            {
+                                tab -= (Model.DrawMargin.Width * 0.1d);
+                            }
+
+                            if (tab < d)
+                            {
+                                return _axis;
+                            }
+                        }
+
+                    }
+
+
+                }
+            }
+
+            return null;
+        }
+
+
         private void MouseWheelOnRoll(object sender, MouseWheelEventArgs e)
         {
-            if (Zoom == ZoomingOptions.None) return;
+            //if (Zoom == ZoomingOptions.None) return;
 
             var p = e.GetPosition(this);
 
@@ -1300,17 +1437,79 @@ namespace LiveCharts.Wpf.Charts.Base
 
             e.Handled = true;
 
+            //TODO:ズーム機能の充実を　AxisZoom=xy  と AxisPan
+            //縦軸の範囲か横軸の範囲かで分ける
+
+            ZoomingOptions requireZoom = this.Zoom;
+
+            //軸ZoomをY軸で行うか？
+            if (AxisZoom == ZoomingOptions.Xy || AxisZoom == ZoomingOptions.Y)
+            {
+                var hitAxisY = _HitTestAxis(p.X, AxisOrientation.Y);
+                if (hitAxisY != null)
+                {
+                        requireZoom = ZoomingOptions.Y;
+                }
+            }
+
+            //軸ZoomをX軸で行うか？
+            if (AxisZoom == ZoomingOptions.Xy || AxisZoom == ZoomingOptions.X)
+            {
+                var hitAxisX = _HitTestAxis(p.Y, AxisOrientation.X);
+                if (hitAxisX != null)
+                {
+                    requireZoom = ZoomingOptions.X;
+                }
+            }
+
+            if (requireZoom == ZoomingOptions.None) return;
+
+
             if (e.Delta > 0)
-                Model.ZoomIn(corePoint);
+                Model.ZoomIn(corePoint, requireZoom);
             else
-                Model.ZoomOut(corePoint);
+                Model.ZoomOut(corePoint, requireZoom);
         }
+
 
         private void OnDraggingStart(object sender, MouseButtonEventArgs e)
         {
             if (Model == null || Model.AxisX == null || Model.AxisY == null) return;
 
             DragOrigin = e.GetPosition(this);
+
+
+            //デフォルトのPan設定
+            RequiredPan = this.Pan;
+
+            //軸PanをY軸で行うか？
+            if (AxisPan == PanningOptions.Xy || AxisPan == PanningOptions.Y)
+            {
+                var hitAxisY = _HitTestAxis(DragOrigin.X, AxisOrientation.Y);
+                if (hitAxisY != null)
+                {
+                    RequiredPan = PanningOptions.Y;
+                }
+            }
+
+            //軸PanをX軸で行うか？
+            if (AxisPan == PanningOptions.Xy || AxisPan == PanningOptions.X)
+            {
+                var hitAxisX = _HitTestAxis(DragOrigin.Y, AxisOrientation.X);
+                if (hitAxisX != null)
+                {
+                    RequiredPan = PanningOptions.X;
+                }
+            }
+
+            //Panの要求がなければ、なにもしない
+            if (RequiredPan == PanningOptions.None) return;
+
+            //Unsetのケース
+            if (RequiredPan == PanningOptions.Unset && Zoom == ZoomingOptions.None) return;
+
+
+            this.CaptureMouse();
             IsPanning = true;
         }
 
@@ -1318,20 +1517,50 @@ namespace LiveCharts.Wpf.Charts.Base
         {
             if (!IsPanning) return;
 
-            if (Pan == PanningOptions.Unset && Zoom == ZoomingOptions.None ||
-                Pan == PanningOptions.None) return;
+            //if (Pan == PanningOptions.Unset && Zoom == ZoomingOptions.None ||
+            //    Pan == PanningOptions.None) return;
 
             var end = e.GetPosition(this);
 
-            Model.Drag(new CorePoint(DragOrigin.X - end.X, DragOrigin.Y - end.Y));
+            Model.Drag(new CorePoint(DragOrigin.X - end.X, DragOrigin.Y - end.Y), RequiredPan);
             DragOrigin = end;
         }
 
         private void OnDraggingEnd(object sender, MouseButtonEventArgs e)
         {
             if (!IsPanning) return;
+
+
+            this.ReleaseMouseCapture();
             IsPanning = false;
         }
+
+        private void MouseDoubleClick_OnAxis(object sender, MouseButtonEventArgs e)
+        {
+            var p = e.GetPosition(this);
+
+            //Y軸上か？
+            if (AxisZoom == ZoomingOptions.Xy || AxisZoom == ZoomingOptions.Y)
+            {
+                var hitAxisY = _HitTestAxis(p.X, AxisOrientation.Y);
+                if (hitAxisY != null)
+                {
+                    hitAxisY.SetRange(double.NaN, double.NaN);
+                }
+            }
+
+            //X軸上か？
+            if (AxisZoom == ZoomingOptions.Xy || AxisZoom == ZoomingOptions.X)
+            {
+                var hitAxisX = _HitTestAxis(p.Y, AxisOrientation.X);
+                if (hitAxisX != null)
+                {
+                    hitAxisX.SetRange(double.NaN, double.NaN);
+                }
+            }
+        }
+
+
         #endregion
 
         #region ScrollBar functionality
