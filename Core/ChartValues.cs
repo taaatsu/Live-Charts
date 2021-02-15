@@ -21,6 +21,7 @@
 //SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -258,8 +259,12 @@ namespace LiveCharts
 
             if (Trackers.TryGetValue(view, out tracker)) return tracker;
 
-            tracker = new PointTracker();
-            Trackers[view] = tracker;
+            //lock処理を追加
+            lock( (Trackers as ICollection).SyncRoot)
+            {
+                tracker = new PointTracker();
+                Trackers[view] = tracker;
+            }
 
             return tracker;
         }
@@ -315,7 +320,10 @@ namespace LiveCharts
 
         private void ObservableOnPointChanged()
         {
-            Trackers.Keys.ForEach(x => x.Model.Chart.Updater.Run());
+            lock ((Trackers as ICollection).SyncRoot)
+            {
+                Trackers.Keys.ForEach(x => x.Model.Chart.Updater.Run());
+            }
         }
 
         private void NotifyOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -341,8 +349,11 @@ namespace LiveCharts
                 }
             });
             */
+            lock ((Trackers as ICollection).SyncRoot)
+            {
+                Trackers.Keys.ForEach(x => x.Model.Chart.Updater.Run());
+            }
 
-            Trackers.Keys.ForEach(x => x.Model.Chart.Updater.Run());
         }
 
         private IEnumerable<ChartPoint> GetGarbagePoints(ISeriesView view)
@@ -424,8 +435,19 @@ namespace LiveCharts
             //しかし、現在のUpdateシステムは、ChartからDispatchタイマーを使った方法で、
             //Updateの方法が一気通貫しかないため、この処理を見直すなら、大きな変更が必要
 
-            if (Trackers.Keys.All(x => x != null && x.Model.Chart != null))
-                Trackers.Keys.ForEach(x => x.Model.Chart.Updater.Run());
+            lock ((Trackers as ICollection).SyncRoot)
+            {
+                if (Trackers.Keys.All(x => x != null && x.Model.Chart != null))
+                    Trackers.Keys.ForEach(x => x.Model.Chart.Updater.Run());
+            }
+
+            //ForEachの途中で、Listの変更が発生しているようなので、こっちに変更....もしうまくいかなければ、でいい
+            //var viewList = Trackers.Keys.ToArray();
+            //if (viewList.All(x => x != null && x.Model.Chart != null))
+            //{
+            //    viewList.ForEach(x => x.Model.Chart.Updater.Run());
+            //}
+
         }
 
         #endregion

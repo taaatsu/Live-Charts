@@ -537,6 +537,27 @@ namespace LiveCharts.Wpf
         }
         #endregion
 
+
+
+        #region イベント
+        // 現在　Accel系Seriesだけが本イベント(SeriesMouseDownのみ)をサポート
+
+        protected void Fire_SeriesMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            SeriesMouseDown?.Invoke(this, e);
+        }
+        public event EventHandler<System.Windows.Input.MouseButtonEventArgs> SeriesMouseDown;
+
+        protected void Fire_SeriesMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            SeriesMouseUp?.Invoke(this, e);
+        }
+        public event EventHandler<System.Windows.Input.MouseButtonEventArgs> SeriesMouseUp;
+
+        #endregion
+
+
+
         private static void OnValuesInstanceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             var series = (Series) dependencyObject;
@@ -576,7 +597,7 @@ namespace LiveCharts.Wpf
             if (series.Visibility == Visibility.Collapsed || series.Visibility == Visibility.Hidden)
                 series.Erase(false);
 
-            if (series.Model == null) return;
+            if (series?.Model?.Chart == null) return;
             series.Model.Chart.Updater.Run();
         }
 

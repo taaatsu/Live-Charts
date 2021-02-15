@@ -170,6 +170,16 @@ namespace LiveCharts.Wpf.Charts.Base
 
             if (chart.Series != null)
             {
+                //新しく接続するコレクションの中身が、既に、どこかの子要素に設定されていた場合
+                //Canvasに表示されないので、接続は強制的に、切る
+                foreach (var series in chart.Series)
+                {
+                    if(series.Model?.Chart != null)
+                    {
+                        series.Erase(true);
+                    }
+                }
+
                 chart.Series.Chart = chart.Model;
                 foreach (var series in chart.Series) series.Model.Chart = chart.Model;
             }

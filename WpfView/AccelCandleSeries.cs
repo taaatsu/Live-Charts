@@ -12,6 +12,7 @@ using LiveCharts.Wpf.Points;
 using LiveCharts.Dtos;
 using LiveCharts.Charts;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace LiveCharts.Wpf
 {
@@ -207,6 +208,9 @@ namespace LiveCharts.Wpf
             if (m_SeriesAccelView == null)
             {
                 m_SeriesAccelView = new _AccelViewElement(this);
+                m_SeriesAccelView.MouseDown += _SeriesAccelView_MouseDown;
+                m_SeriesAccelView.MouseUp += _SeriesAccelView_MouseUp;
+
 
                 Model.Chart.View.AddToDrawMargin(m_SeriesAccelView);
 
@@ -217,6 +221,7 @@ namespace LiveCharts.Wpf
             }
             m_SeriesAccelView.InvalidateVisual();
         }
+
         private _AccelViewElement m_SeriesAccelView;
 
         /// <summary>
@@ -227,6 +232,9 @@ namespace LiveCharts.Wpf
         {
             if (m_SeriesAccelView != null)
             {
+                m_SeriesAccelView.MouseDown -= _SeriesAccelView_MouseDown;
+                m_SeriesAccelView.MouseUp -= _SeriesAccelView_MouseUp;
+
                 Model?.Chart?.View?.RemoveFromDrawMargin(m_SeriesAccelView);
                 m_SeriesAccelView = null;
             }
@@ -234,7 +242,23 @@ namespace LiveCharts.Wpf
             base.Erase(removeFromView);
         }
 
+
+        /// <summary>
+        /// ビジュアルエレメントからのマウスイベントを、自身のものとしてハンドリング
+        /// </summary>
+        private void _SeriesAccelView_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Fire_SeriesMouseDown(e);
+        }
+        private void _SeriesAccelView_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Fire_SeriesMouseUp(e);
+        }
+
+
         #endregion
+
+
 
 
         #region Bulk rendering element and method
@@ -490,6 +514,11 @@ namespace LiveCharts.Wpf
             public void OnHoverLeave()
             {
                 _owner.HoverringChartPoint = null;
+            }
+
+            protected override void OnMouseDown(MouseButtonEventArgs e)
+            {
+                base.OnMouseDown(e);
             }
         }
 

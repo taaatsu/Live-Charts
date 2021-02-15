@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Input;
 using System.Windows.Shapes;
 using LiveCharts.Definitions.Points;
 using LiveCharts.Definitions.Series;
@@ -192,6 +193,9 @@ namespace LiveCharts.Wpf
             if (m_SeriesAccelView == null)
             {
                 m_SeriesAccelView = new _AccelViewElement(this);
+                m_SeriesAccelView.MouseDown += _SeriesAccelView_MouseDown;
+                m_SeriesAccelView.MouseUp += _SeriesAccelView_MouseUp;  
+                //設定してはいるが、実際にはMouseUpは、Down時にでキャプチャ設定しないと来ない。
 
                 Model.Chart.View.AddToDrawMargin(m_SeriesAccelView);
 
@@ -212,6 +216,9 @@ namespace LiveCharts.Wpf
         {
             if (m_SeriesAccelView != null)
             {
+                m_SeriesAccelView.MouseDown -= _SeriesAccelView_MouseDown;
+                m_SeriesAccelView.MouseUp -= _SeriesAccelView_MouseUp; 
+
                 Model?.Chart?.View?.RemoveFromDrawMargin(m_SeriesAccelView);
                 m_SeriesAccelView = null;
             }
@@ -231,6 +238,20 @@ namespace LiveCharts.Wpf
             //nothing to do
         }
 
+
+        /// <summary>
+        /// ビジュアルエレメントからのマウスイベントを、自身のものとしてハンドリング
+        /// 
+        /// 処理自体は、Seriesでサポートしてもよいが、いまはAccel系だけにしておく
+        /// </summary>
+        private void _SeriesAccelView_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Fire_SeriesMouseDown(e);
+        }
+        private void _SeriesAccelView_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Fire_SeriesMouseUp(e);
+        }
 
 
         #endregion
