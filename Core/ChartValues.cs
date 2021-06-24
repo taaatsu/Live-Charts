@@ -208,7 +208,8 @@ namespace LiveCharts
                 cp.Key = index;
                 cp.SeriesView = seriesView;
 
-                config.Evaluate(index, value, cp);
+                //config==null‚Ìê‡‚ª‚ ‚é‚Ì‚Å•ÛŒì‚ğ’Ç‰Á
+                config?.Evaluate(index, value, cp);
                 index++;
 
                 yield return cp;
