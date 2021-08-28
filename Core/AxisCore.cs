@@ -312,18 +312,21 @@ namespace LiveCharts
             m = S;
             //追加ここまで
 
-            if (TopLimit <= 0 && BotLimit < 0)
-            {
-                var l = TopLimit - (EvaluatesUnitWidth ? u : 0);
-                LastSeparator = l;
-                for (var i = l; i >= Math.Truncate(BotLimit / m) * m; i -= S)
-                {
-                    FirstSeparator = i;
-                    DrawSeparator(i, tolerance, currentMargin, f, source);
-                }
-            }
-            else
-            {
+
+            //軸がマイナス圏に入ると、セパレータの構築が別のロジックになっているが、
+            //別建てにする必要はないと思う
+            //if (TopLimit <= 0 && BotLimit < 0)
+            //{
+            //    var l = TopLimit - (EvaluatesUnitWidth ? u : 0);
+            //    LastSeparator = l;
+            //    for (var i = l; i >= Math.Truncate(BotLimit / m) * m; i -= S)
+            //    {
+            //        FirstSeparator = i;
+            //        DrawSeparator(i, tolerance, currentMargin, f, source);
+            //    }
+            //}
+            //else
+            //{
                 var l = Math.Truncate(BotLimit / m) * m;
                 FirstSeparator = l;
                 for (var i = l; i <= TopLimit - (EvaluatesUnitWidth ? u : 0); i += S)
@@ -331,7 +334,7 @@ namespace LiveCharts
                      LastSeparator = i;
                     DrawSeparator(i, tolerance, currentMargin, f, source);
                 }
-            }
+            //}
 
             return currentMargin;
         }
