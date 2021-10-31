@@ -241,6 +241,7 @@ namespace LiveCharts.Charts
                 var ax = AxisY[index];
                 var titleSize = ax.View.UpdateTitle(this, -90d);
                 var biggest = ax.PrepareChart(AxisOrientation.Y, this);
+                //biggestはIsMergedのときWidthもHeightもセロになる点に注意
 
                 var x = curSize.Left;
 

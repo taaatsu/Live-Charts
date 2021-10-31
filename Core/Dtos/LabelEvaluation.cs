@@ -55,8 +55,20 @@ namespace LiveCharts.Dtos
 
                 if (source == AxisOrientation.Y)
                 {
-                    XOffset = padding;
-                    YOffset = padding;
+                    //XOffset = padding;
+                    //YOffset = padding;
+                    if (axis.Position == AxisPosition.LeftBottom)
+                    {
+                        //Left
+                        XOffset = padding;
+                        YOffset = padding;
+                    }
+                    else
+                    {
+                        //Right
+                        XOffset = -padding - w;
+                        YOffset = padding;
+                    }
                 }
                 else
                 {
@@ -64,13 +76,15 @@ namespace LiveCharts.Dtos
                     {
                         //Bot
                         XOffset = padding;
-                        YOffset = -h * 2 - padding;
+                        //YOffset = -h * 2 - padding;
+                        YOffset = -padding - h;
                     }
                     else
                     {
                         //Top
                         XOffset = padding;
-                        YOffset = padding + h * 2;
+                        //YOffset = padding + h * 2;
+                        YOffset = padding;
                     }
                 }
 
