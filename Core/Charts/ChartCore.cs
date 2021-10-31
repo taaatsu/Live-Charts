@@ -247,14 +247,14 @@ namespace LiveCharts.Charts
                 if (ax.Position == AxisPosition.LeftBottom)
                 {
                     ax.View.SetTitleLeft(x);
-                    curSize.Left += titleSize.Height + biggest.Width + padding;
-                    curSize.Width -= (titleSize.Height + biggest.Width + padding);
+                    curSize.Left += (titleSize.Height + (ax.IsMerged ? 0 : biggest.Width) + padding);
+                    curSize.Width -= (titleSize.Height + (ax.IsMerged ? 0 : biggest.Width) + padding);
                     ax.Tab = curSize.Left;
                 }
                 else
                 {
                     ax.View.SetTitleLeft(x + curSize.Width - titleSize.Height);
-                    curSize.Width -= (titleSize.Height + biggest.Width + padding);
+                    curSize.Width -= (titleSize.Height + (ax.IsMerged ? 0 : biggest.Width) + padding);
                     ax.Tab = curSize.Left + curSize.Width;
                 }
 
@@ -286,14 +286,14 @@ namespace LiveCharts.Charts
                 if (xi.Position == AxisPosition.LeftBottom)
                 {
                     xi.View.SetTitleTop(top + curSize.Height - titleSize.Height);
-                    curSize.Height -= (titleSize.Height + biggest.Height);
+                    curSize.Height -= (titleSize.Height + (xi.IsMerged ? 0 : biggest.Height));
                     xi.Tab = curSize.Top + curSize.Height;
                 }
                 else
                 {
                     xi.View.SetTitleTop(top);
-                    curSize.Top += titleSize.Height + biggest.Height;
-                    curSize.Height -= (titleSize.Height + biggest.Height);
+                    curSize.Top += (titleSize.Height + (xi.IsMerged ? 0 : biggest.Height));
+                    curSize.Height -= (titleSize.Height + (xi.IsMerged ? 0 : biggest.Height));
                     xi.Tab = curSize.Top;
                 }
 
@@ -324,6 +324,8 @@ namespace LiveCharts.Charts
                         correctedAxis.Tab -= dif;
                     }
                 }
+
+
             }
 
             DrawMargin.Top = curSize.Top;

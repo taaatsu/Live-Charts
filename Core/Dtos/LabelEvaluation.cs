@@ -44,38 +44,6 @@ namespace LiveCharts.Dtos
             ActualWidth = w;
             ActualHeight = h;
 
-            // for now there is no support for rotated and merged labels.
-            // the labels will be rotated but there is no warranty that they are displayed correctly
-            if (axis.View.IsMerged)
-            {
-                Top = 0;
-                Bottom = 0;
-                Left = 0;
-                Right = 0;
-
-                if (source == AxisOrientation.Y)
-                {
-                    XOffset = padding;
-                    YOffset = padding;
-                }
-                else
-                {
-                    if (axis.Position == AxisPosition.LeftBottom)
-                    {
-                        //Bot
-                        XOffset = padding;
-                        YOffset = -h * 2 - padding;
-                    }
-                    else
-                    {
-                        //Top
-                        XOffset = padding;
-                        YOffset = padding + h * 2;
-                    }
-                }
-
-                return;
-            }
 
             //OK now lets evaluate the rotation angle...
 
@@ -100,6 +68,63 @@ namespace LiveCharts.Dtos
             if (LabelAngle < 0) LabelAngle += 360;
             if (LabelAngle > 90 && LabelAngle < 270)
                 LabelAngle = (LabelAngle + 180) % 360;
+
+
+            // TakenHeight と TakenWidth を計算させるために、IsMargedの処理を移動し、
+            // IsMerged下でのLabelの位置処理を補正
+            // for now there is no support for rotated and merged labels.
+            // the labels will be rotated but there is no warranty that they are displayed correctly
+            if (axis.View.IsMerged)
+            {
+
+                Top = 0;
+                Bottom = 0;
+                Left = 0;
+                Right = 0;
+
+                if (source == AxisOrientation.Y)
+                {
+                    XOffset = padding;
+                    YOffset = padding;
+
+                    if (axis.Position == AxisPosition.LeftBottom)
+                    {
+                        //Left
+                        XOffset = padding;
+                        YOffset = padding;
+                    }
+                    else
+                    {
+                        //Right
+                        XOffset = -padding -TakenWidth;
+                        YOffset = padding;
+                    }
+
+                }
+                else
+                {
+                    if (axis.Position == AxisPosition.LeftBottom)
+                    {
+                        //Bot
+                        XOffset = padding;
+                        //YOffset = -h * 2 - padding;
+                        YOffset = -padding - TakenHeight;
+                    }
+                    else
+                    {
+                        //Top
+                        XOffset = padding;
+                        //YOffset = padding + h * 2;
+                        YOffset = padding;
+                    }
+                }
+
+                return;
+            }
+
+
+
+
 
             //at this points angles should only exist in 1st and 4th quadrant
             //those are the only quadrants that generates readable labels
