@@ -79,6 +79,15 @@ namespace LiveCharts.Definitions.Series
         /// <c>true</c> if this instance is series visible; otherwise, <c>false</c>.
         /// </value>
         bool IsSeriesVisible { get; }
+
+        /// <summary>
+        /// Jumon追加 ツールチップでの表示に参加するか否かを指定する
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is series visible on Tooltip; otherwise, <c>false</c>.
+        /// </value>
+        bool IsSeriesVisibleOnToolTip { get; }
+
         /// <summary>
         /// Gets or sets the label point.
         /// </summary>

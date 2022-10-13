@@ -265,7 +265,7 @@ namespace LiveCharts
                     {
                         XFormatter = ax.GetFormatter(),
                         YFormatter = ay.GetFormatter(),
-                        Points = chart.View.ActualSeries.Where(x => x.ScalesXAt == senderPoint.SeriesView.ScalesXAt)
+                        Points = chart.View.ActualSeries.Where(x => (x.ScalesXAt == senderPoint.SeriesView.ScalesXAt) && x.IsSeriesVisibleOnToolTip)
                             .SelectMany(x => x.Values.GetPoints(x))
                             .Where(x => Math.Abs(x.X - senderPoint.X) < tx),
                         Shares = (chart.View is IPieChart) ? null : (double?) senderPoint.X

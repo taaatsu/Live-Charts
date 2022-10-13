@@ -52,6 +52,8 @@ namespace LiveCharts.Wpf
             SetCurrentValue(TitleProperty, "Series");
             IsVisibleChanged += OnIsVisibleChanged;
             IsFirstDraw = true;
+
+            IsSeriesVisibleOnToolTip = true;
         }
 
         /// <summary>
@@ -64,6 +66,8 @@ namespace LiveCharts.Wpf
             SetValue(TitleProperty, "Series");
             IsVisibleChanged += OnIsVisibleChanged;
             IsFirstDraw = true;
+
+            IsSeriesVisibleOnToolTip = true;
         }
 
         static Series()
@@ -107,6 +111,14 @@ namespace LiveCharts.Wpf
         public bool IsSeriesVisible
         {
             get { return Visibility == Visibility.Visible; }
+        }
+
+        /// <summary>
+        /// Jumon追加 ツールチップでの表示に参加するか否かを指定
+        /// </summary>
+        public bool IsSeriesVisibleOnToolTip
+        {
+            get; set;
         }
 
         /// <summary>
