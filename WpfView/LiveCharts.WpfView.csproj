@@ -12,6 +12,7 @@
     <AssemblyOriginatorKeyFile>../LVCSign.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>LiveCharts.Wpf</RootNamespace>
     <AssemblyName>LiveCharts.Wpf</AssemblyName>
+    <Configurations>Debug;Release;TradomCoreまで</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

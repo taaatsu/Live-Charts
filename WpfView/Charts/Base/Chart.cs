@@ -1364,6 +1364,12 @@ namespace LiveCharts.Wpf.Charts.Base
             {
                 foreach (var _axis in _axisList)
                 {
+                    //Modelがnullのケースで呼ばれるとこまるので
+                    if (_axis.Model==null)
+                    {
+                        continue;
+                    }
+
                     var tab = _axis.Model.Tab;
 
                     //X軸を探す場合

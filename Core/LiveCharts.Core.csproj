@@ -10,6 +10,7 @@
     <Copyright>Copyright © 2016 Alberto Rodríguez Orozco, 2020 Tatsuro Shidawara</Copyright>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../LVCSign.snk</AssemblyOriginatorKeyFile>
+    <Configurations>Debug;Release;TradomCoreまで</Configurations>
   </PropertyGroup>
 
 </Project>

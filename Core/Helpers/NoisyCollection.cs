@@ -453,6 +453,28 @@ namespace LiveCharts.Helpers
                 NotifyCollectionChangedAction.Remove, item, index));
         }
 
+
+        //★★★★ JumonDotCom追加
+        //RemoveAll関数を新規追加
+        public void RemoveAll(Func<T, bool> match)
+        {
+            IList<T> removedItems;
+            lock (_sync)
+            {
+                removedItems = _source.Where(match).ToList();
+                _source.RemoveAll(o => match(o));
+            }
+            OnNoisyCollectionChanged(removedItems, null);
+            OnPropertyChanged(CountString);
+            OnPropertyChanged(IndexerString);
+            //This scenario is not supported normally in ObservableCollections
+            //in this case we'll send a reset action.
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(
+                NotifyCollectionChangedAction.Reset));
+        }
+        
+
+
         /// <summary>
         /// Removes all the items from the collection, then notifies the change
         /// </summary>
