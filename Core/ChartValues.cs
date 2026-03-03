@@ -385,6 +385,21 @@ namespace LiveCharts
 
         private void OnChanged(IEnumerable<T> oldItems, IEnumerable<T> newItems)
         {
+
+            //INotifyPropertyChangedのサポート判定は、インスタンスベースしかない
+            //--------------- 四の五の言わずに、変更ここから ------------------------------------
+            foreach (var item in oldItems ?? Enumerable.Empty<T>())
+            {
+                if (item is INotifyPropertyChanged npc)
+                    npc.PropertyChanged -= NotifyOnPropertyChanged;
+            }
+
+            foreach (var item in newItems ?? Enumerable.Empty<T>())
+            {
+                if (item is INotifyPropertyChanged npc)
+                    npc.PropertyChanged += NotifyOnPropertyChanged;
+            }
+            /* 
             if (isClass)
             {
                 //before removing the instance, you need to disconnect it
@@ -429,7 +444,8 @@ namespace LiveCharts
                     }
                 }
             }
-
+            */
+            //--------------- 変更ここまで ------------------------------------
 
             //TODO:ここは、ChartValueの要素数が変化した状態なので、チャートの再描画とかするのはおかしい
             //新しい要素の評価の実施と、SeriesViewへの通知が正しい

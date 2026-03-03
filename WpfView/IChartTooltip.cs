@@ -28,7 +28,7 @@ namespace LiveCharts.Wpf
     /// 
     /// </summary>
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
-    public interface IChartTooltip : INotifyPropertyChanged
+    public interface IChartTooltip
     {
         /// <summary>
         /// Gets or sets the data.

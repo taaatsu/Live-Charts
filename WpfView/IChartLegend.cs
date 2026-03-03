@@ -29,7 +29,7 @@ namespace LiveCharts.Wpf
     /// 
     /// </summary>
     /// <seealso cref="System.ComponentModel.INotifyPropertyChanged" />
-    public interface IChartLegend : INotifyPropertyChanged
+    public interface IChartLegend
     {
         /// <summary>
         /// Gets or sets the series.
