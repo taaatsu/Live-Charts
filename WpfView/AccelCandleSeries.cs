@@ -296,10 +296,10 @@ namespace LiveCharts.Wpf
 
                 
 
-                Brush brushIncrease = IncreaseBrush.Clone();
+                Brush brushIncrease = IncreaseBrush?.Clone() ?? Stroke.Clone();
                 brushIncrease.Freeze();
 
-                Brush brushDecrease = DecreaseBrush.Clone();
+                Brush brushDecrease = DecreaseBrush?.Clone() ?? Stroke.Clone();
                 brushDecrease.Freeze();
 
 
