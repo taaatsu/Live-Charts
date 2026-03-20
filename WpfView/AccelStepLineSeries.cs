@@ -177,6 +177,8 @@ namespace LiveCharts.Wpf
 
 
                 ChartPoint previous = null;
+                double lastDeltaX = 0d;
+                double lastDeltaY = 0d;
                 foreach (var current in this.RenderdChartPointList)
                 {
                     if (previous != null)
@@ -184,6 +186,9 @@ namespace LiveCharts.Wpf
                         var currentView = current.View as AccelStepLinePointView;
                         if (currentView != null)
                         {
+                            lastDeltaX = currentView.DeltaX;
+                            lastDeltaY = currentView.DeltaY;
+
                             if (InvertedMode)
                             {
                                 drawingContext.DrawLine(penAlternativeStroke
@@ -210,6 +215,49 @@ namespace LiveCharts.Wpf
 
                     previous = current;
                 }
+
+
+                // ★ 最後のポイントから1ステップ分の延長線
+                //
+                //    StepLine の各セグメントは L字（持続線 + 遷移線）で構成される。
+                //    最後のポイントには「次のポイント」が存在しないため、持続線が欠落する。
+                //
+                //    直近の DeltaX/DeltaY（= 1サイクル分のピクセル幅）を使い、
+                //    L字の退化形（遷移成分ゼロの持続線のみ）を描画する。
+                //
+                //    通常モード:   水平方向に DeltaX 分延長（値が持続）
+                //    InvertedMode: 垂直方向に DeltaY 分延長（値が持続）
+                if (previous != null)
+                {
+                    if (InvertedMode)
+                    {
+                        if (Math.Abs(lastDeltaY) > 0d)
+                        {
+                            double extendToY = previous.ChartLocation.Y + lastDeltaY;
+                            double bottomEdge = Model.Chart.DrawMargin.Height;
+                            extendToY = Math.Max(0d, Math.Min(extendToY, bottomEdge));
+
+                            drawingContext.DrawLine(penStroke
+                                , new Point(previous.ChartLocation.X, previous.ChartLocation.Y)
+                                , new Point(previous.ChartLocation.X, extendToY));
+                        }
+                    }
+                    else
+                    {
+                        if (lastDeltaX > 0d)
+                        {
+                            double extendToX = previous.ChartLocation.X + lastDeltaX;
+                            double rightEdge = Model.Chart.DrawMargin.Width;
+                            extendToX = Math.Min(extendToX, rightEdge);
+
+                            drawingContext.DrawLine(penStroke
+                                , new Point(previous.ChartLocation.X, previous.ChartLocation.Y)
+                                , new Point(extendToX, previous.ChartLocation.Y));
+                        }
+                    }
+                }
+
+
 
 
                 // Draw point geometry
